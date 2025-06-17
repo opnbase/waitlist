@@ -9,7 +9,8 @@ import { comingSoonPageContent } from "@/lib/page-content";
 import Footer from "./components/footer";
 import Navbar from "./components/navbar";
 import NewsletterForm from "./components/newsletter-form";
-import { Play } from "lucide-react";
+import ComingSoonSuspense from "./components/coming-soon-suspense";
+import { assets } from "./assets";
 
 export default function HomePage() {
   const [titleNumber, setTitleNumber] = useState(0);
@@ -63,17 +64,8 @@ export default function HomePage() {
             </div>
 
             <div className="w-full md:w-1/2 flex justify-center items-center">
-              <div
-                className="relative w-full h-[300px] md:h-[400px] bg-gradient-to-br from-white/10 to-white/5 rounded-xl backdrop-blur-md flex items-center justify-center group cursor-pointer"
-                role="button"
-                aria-label="Play video (mock)"
-                tabIndex={0}
-              >
-                <div className="p-4 bg-white/20 rounded-full shadow-lg group-hover:bg-white/30 transition-all duration-300 ease-in-out transform group-hover:scale-110">
-                  <Play className="w-6 h-6 text-white fill-white" />
-                </div>
-              </div>
-              </div>
+              <ComingSoonSuspense imageUrl={assets.thumbnail} altText="Video thumbnail" />
+            </div>
           </div>
         </main>
 
@@ -82,5 +74,3 @@ export default function HomePage() {
     </BeamsBackground>
   );
 }
-
-
