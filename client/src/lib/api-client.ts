@@ -1,6 +1,5 @@
 import axios, { AxiosHeaders } from 'axios';
 
-console.log(import.meta.env.VITE_API_URL)
 // Create an Axios instance with default config
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
