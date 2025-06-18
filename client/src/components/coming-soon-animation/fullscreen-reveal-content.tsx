@@ -20,7 +20,6 @@ interface FullscreenRevealContentProps {
 const ISSUE_DISPLAY_DURATION = 4000; // 4 seconds
 
 export default function FullscreenRevealContent({
-  onClose,
   viewCount,
 }: FullscreenRevealContentProps) {
   const [currentStage, setCurrentStage] = useState<"issue" | "finalReveal">(
