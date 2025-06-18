@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X } from "lucide-react";
 import FullscreenRevealContent from "./fullscreen-reveal-content"; // New import
+import { getFingerPrint } from "@/lib/device-fingerprint";
+import { api } from "@/lib/api-client";
 
 interface ComingSoonSuspenseProps {
   imageUrl: string;
@@ -15,20 +17,43 @@ const ComingSoonSuspense: React.FC<ComingSoonSuspenseProps> = ({
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showBlackOverlay, setShowBlackOverlay] = useState(false);
-  const [viewCount] = useState(
-    Math.floor(Math.random() * (100000 - 1000 + 1)) + 1000
-  ); 
+  const [viewCount, setViewCount] = useState(0);
 
+  const fetchCount = async () => {
+    try {
+      const response = await api.viewCount();
+      if(response.status === 200){
+        setViewCount(response.data.views);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleViewCount = async () => {
+    try {
+      const fingerprint = await getFingerPrint();
+      const hash = fingerprint.fingerprint_hash;
+      if (hash) {
+        await api.viewPresenting(hash);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
   const handleOpenFullScreen = () => {
     setIsFullScreen(true);
+    handleViewCount();
+    fetchCount();
     setTimeout(() => {
       setShowBlackOverlay(true);
-    }, 300); 
+    }, 300);
   };
 
   const handleCloseFullScreen = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setShowBlackOverlay(false); 
+    setShowBlackOverlay(false);
     setIsFullScreen(false);
   };
 
