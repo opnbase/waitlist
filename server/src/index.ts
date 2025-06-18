@@ -91,6 +91,42 @@ app.post(
   }
 );
 
+app.post(
+  "/viewed-presenting",
+  joinWaitlistLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const { hash } = req.body;
+
+      if(!hash){
+        res.status(200).json("Fingerprint missing");
+      }
+
+      await supabase.from("user_fingerprints").update({viewed_presenting: true}).eq("fingerprint_hash", hash);
+      
+      res.status(200);
+    } catch (error) {
+      res.status(500).json("Internal server error");
+    }
+  }
+);
+
+app.get(
+  "/view-count",
+  joinWaitlistLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const { count, error } = await supabase
+        .from("user_fingerprints")
+        .select("*", { count: "exact", head: true })
+        .eq("viewed_presenting", true);
+      res.status(200).json({ views: count });
+    } catch (error) {
+      res.status(500).json("Internal server error");
+    }
+  }
+);
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
