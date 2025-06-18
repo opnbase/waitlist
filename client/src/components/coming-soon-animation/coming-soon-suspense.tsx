@@ -48,7 +48,7 @@ const ComingSoonSuspense: React.FC<ComingSoonSuspenseProps> = ({
         <motion.div
           layoutId={`reveal-card-${imageUrl}`}
           onClick={handleOpenFullScreen}
-          className="relative w-full h-[300px] md:h-[400px] bg-gradient-to-br from-white/10 to-white/5 rounded-xl backdrop-blur-md flex items-center justify-center group cursor-pointer overflow-hidden"
+          className="relative w-full h-[300px] md:h-[400px] bg-gradient-to-br from-white/10 to-white/5 rounded-xl backdrop-blur-md flex items-center justify-center group cursor-pointer overflow-hidden "
           role="button"
           aria-label="See more (coming soon)"
           tabIndex={0}
@@ -56,7 +56,7 @@ const ComingSoonSuspense: React.FC<ComingSoonSuspenseProps> = ({
           <img
             src={imageUrl || "/placeholder.svg"}
             alt={altText || "Coming Soon"}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out "
+            className="absolute  inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out "
           />
           <div className="absolute inset-0 bg-black/30 transition-colors duration-300 group-hover:bg-black/50" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 bg-white/20 rounded-full shadow-lg group-hover:bg-white/30 transition-all duration-300 ease-in-out transform group-hover:scale-110 z-10">

@@ -1,24 +1,71 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
-import { BeamsBackground } from "@/components/beams-background";
 import { comingSoonPageContent } from "@/lib/page-content";
 
-import Footer from "./components/footer";
-import Navbar from "./components/navbar";
-import NewsletterForm from "./components/newsletter-form";
 import ComingSoonSuspense from "./components/coming-soon-animation/coming-soon-suspense";
 import { assets } from "./assets";
+import { api } from "./lib/api-client";
+import { BeamsBackground } from "./components/beams-background";
+import Navbar from "./components/navbar";
+import NewsletterForm from "./components/newsletter-form";
+import Footer from "./components/footer";
+
+export interface IFingerPrint {
+  user_agent: string;
+  screen: string;
+  timezone: string;
+  language: string;
+  platform?: string;
+  ip_address?: string;
+  fingerprint_hash?: string;
+}
 
 export default function HomePage() {
   const [titleNumber, setTitleNumber] = useState(0);
 
   const animatedWords = useMemo(() => comingSoonPageContent.animatedWords, []);
 
+  async function sendFingerprint() {
+    try {
+      const fingerprint: IFingerPrint = {
+        user_agent: navigator.userAgent,
+        screen: `${screen.width}x${screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        platform: navigator?.platform || "unknown"
+      };
+
+      const ipRes = await fetch("https://api64.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      fingerprint.ip_address = ipData.ip;
+
+      const raw = Object.values(fingerprint).join("|");
+      const encoder = new TextEncoder();
+      const data = encoder.encode(raw);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+      fingerprint.fingerprint_hash = hashHex;
+
+      await api.trackUser(fingerprint);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    sendFingerprint();
+  }, []);
+
   useEffect(() => {
     const id = setTimeout(() => {
       setTitleNumber((n) => (n + 1) % animatedWords.length);
     }, 2000);
+
     return () => clearTimeout(id);
   }, [titleNumber, animatedWords]);
 
@@ -61,8 +108,11 @@ export default function HomePage() {
               <NewsletterForm />
             </div>
 
-            <div className="w-full md:w-1/2 flex justify-center items-center">
-              <ComingSoonSuspense imageUrl={assets.thumbnail} altText="Video thumbnail" />
+            <div className="w-full md:w-1/2  flex justify-center items-center">
+              <ComingSoonSuspense
+                imageUrl={assets.thumbnail}
+                altText="Video thumbnail"
+              />
             </div>
           </div>
         </main>

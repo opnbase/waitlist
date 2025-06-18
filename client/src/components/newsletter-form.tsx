@@ -4,16 +4,31 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { api } from "@/lib/api-client";
+import { AxiosError } from "axios";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted:", { email, subscribed });
-    alert("Thank you for signing up!");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    
+    try {
+      e.preventDefault();
+      const response = await api.joinWaitlist(email);
+
+      if(response.status == 200){
+        alert("Thank you for signing up!");
+        setEmail("");
+        setSubscribed(false);
+      }
+    } catch (error) {
+      if(error instanceof AxiosError){
+        alert(error.response?.data.message);
+      }
+    } 
   };
+
   return (
     <>
       <p className="text-base sm:text-lg text-neutral-300 mb-8 sm:mb-10 max-w-md">
