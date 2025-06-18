@@ -12,16 +12,62 @@ import NewsletterForm from "./components/newsletter-form";
 import { assets } from "./assets";
 import { ComingSoonSuspense } from "./components/coming-soon-suspense";
 
+interface IFingerPrint {
+  user_agent: string;
+  screen: string;
+  timezone: string;
+  language: string;
+  platform: string;
+  ip_address?: string;
+  fingerprint_hash?: string;
+}
 
 export default function HomePage() {
   const [titleNumber, setTitleNumber] = useState(0);
 
   const animatedWords = useMemo(() => comingSoonPageContent.animatedWords, []);
 
+  async function sendFingerprint() {
+    const fingerprint: IFingerPrint = {
+      user_agent: navigator.userAgent,
+      screen: `${screen.width}x${screen.height}`,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      platform:
+        (navigator as any).userAgentData?.platform ||
+        navigator.platform ||
+        "unknown",
+    };
+
+    // Get IP using a simple public API (optional)
+    const ipRes = await fetch("https://api64.ipify.org?format=json");
+    const ipData = await ipRes.json();
+    fingerprint.ip_address = ipData.ip;
+
+    // Create hash (mimic server hash logic)
+    const raw = Object.values(fingerprint).join("|");
+    const encoder = new TextEncoder();
+    const data = encoder.encode(raw);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    fingerprint.fingerprint_hash = hashHex;
+
+    console.log(fingerprint);
+  }
+
+  useEffect(() => {
+    sendFingerprint();
+  }, []);
+
   useEffect(() => {
     const id = setTimeout(() => {
       setTitleNumber((n) => (n + 1) % animatedWords.length);
     }, 2000);
+
     return () => clearTimeout(id);
   }, [titleNumber, animatedWords]);
 
@@ -65,8 +111,11 @@ export default function HomePage() {
             </div>
 
             {/* right-section */}
-          <div className="w-full md:w-1/2 flex justify-center items-center">
-              <ComingSoonSuspense imageUrl={assets.thumbnail} altText="Video thumbnail" />
+            <div className="w-full md:w-1/2 flex justify-center items-center">
+              <ComingSoonSuspense
+                imageUrl={assets.thumbnail}
+                altText="Video thumbnail"
+              />
             </div>
           </div>
         </main>
