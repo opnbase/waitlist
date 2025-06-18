@@ -51,7 +51,7 @@ Follow our journey:
   <a href="https://x.com/opnbase" target="_blank">
     <img src="https://img.shields.io/badge/Twitter-%237b8271?logo=x&logoColor=white" style="height:24px" />
   </a>
-  <a href="https://discord.gg/6cH" target="_blank"> 
+  <a href="https://discord.gg/2HkPH7WJ2p" target="_blank"> 
     <img src="https://img.shields.io/badge/Discord-%237b8271?logo=discord&logoColor=white" style="height:24px" />
   </a>
 </p>
