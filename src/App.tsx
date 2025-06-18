@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -9,7 +7,7 @@ import { comingSoonPageContent } from "@/lib/page-content";
 import Footer from "./components/footer";
 import Navbar from "./components/navbar";
 import NewsletterForm from "./components/newsletter-form";
-import ComingSoonSuspense from "./components/coming-soon-suspense";
+import ComingSoonSuspense from "./components/coming-soon-animation/coming-soon-suspense";
 import { assets } from "./assets";
 
 export default function HomePage() {
@@ -74,3 +72,4 @@ export default function HomePage() {
     </BeamsBackground>
   );
 }
+

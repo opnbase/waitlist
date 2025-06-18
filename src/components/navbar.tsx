@@ -23,6 +23,7 @@ const Navbar = () => {
               <a
                 key={link.name}
                 href={link.href}
+                target={link?.href === "#" ? "_self" : "_blank"}
                 className="text-neutral-300 hover:text-white transition-colors"
               >
                 {link.name}
