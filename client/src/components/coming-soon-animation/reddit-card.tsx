@@ -48,11 +48,20 @@ export default function RedditCard({ issue }: RedditCardProps) {
             height={40}
             className="rounded-full"
           />
-          <div>
-            <span className="text-sm font-semibold text-neutral-100">
-              {issue.username}
-            </span>
-            <span className="text-xs text-neutral-400 block">{issue.date}</span>
+          <div className="flex items-center gap2">
+            <div className="flex flex-col">
+              <div className="flex flex-row items-center gap-2">
+                <span className="text-sm font-semibold text-neutral-100">
+                  {issue.group}
+                </span>
+                <span className="text-xs text-neutral-400 block">
+                  {issue.date}
+                </span>
+              </div>
+              <span className="text-xs font-semibold text-neutral-400">
+                {issue.username}
+              </span>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">

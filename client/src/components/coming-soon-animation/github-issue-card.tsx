@@ -124,7 +124,7 @@ export default function GithubIssueCard({ issue }: GithubIssueCardProps) {
                     />
                   )}
                   <span
-                    className="item-start"
+                    className="item-start text-left"
                     dangerouslySetInnerHTML={{
                       __html: item.text.replace(
                         /\[([^\]]+)\]\(([^)]+)\)/g,

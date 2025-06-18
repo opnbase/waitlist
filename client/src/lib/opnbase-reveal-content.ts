@@ -9,7 +9,7 @@ export interface GithubChecklistItem {
 
 export interface GithubSection {
   id: string;
-  title: string;
+  title?: string;
   content: string;
 }
 
@@ -70,6 +70,7 @@ export interface IssueDetail {
   id: string;
   social: "reddit" | "github" | "github-comment" | "stackoverflow"; // Added 'stackoverflow'
   username: string;
+  group?: string;
   avatarUrl: string;
   date: string;
   tag?: { text: string; colorScheme?: string }; // Primarily for Reddit card
@@ -91,29 +92,13 @@ const CONSISTENT_AVATAR_SM_URL =
 
 export const revealIssues: IssueDetail[] = [
   {
-    id: "issue1",
-    social: "reddit",
-    username: "SupaSorter",
-    avatarUrl: CONSISTENT_AVATAR_URL,
-    date: "3 months ago",
-    tag: { text: "Self-Host", colorScheme: "bg-orange-500/20 text-orange-300" },
-    heading:
-      "Why can I only run one project per instance on self-hosted Supabase?",
-    description:
-      "Users find it restrictive that a single self-hosted Supabase instance is tied to one project, limiting scalability for multiple applications.",
-    link: "#",
-    upvotes: "127",
-    downvotes: "3",
-    comments: "42",
-  },
-  {
     id: "gh-issue1",
     social: "github",
     link: "https://github.com/supabase/supabase/issues/12963#issue-1620208386",
     username: "cristian-milea",
     avatarUrl: CONSISTENT_AVATAR_URL,
     date: "Mar 12, 2023",
-    heading: "Need Better documentation on self hosted setup",
+    heading: "Better documentation on self hosted setup",
     description: "",
     githubData: {
       titlePrefix: "Bug report",
@@ -217,60 +202,163 @@ My advice is if you need a Baas without a strong need for SQL or relations in da
   {
     id: "issue3",
     social: "reddit",
-    username: "DockerTroubles",
+    group: "r/Supabase",
+    username: "ericmathison",
+    link : "https://www.reddit.com/r/Supabase/comments/1idhwhl/anyone_able_to_get_the_self_hosted_version",
     avatarUrl: CONSISTENT_AVATAR_URL,
-    date: "1 month ago",
-    tag: { text: "Stability", colorScheme: "bg-red-500/20 text-red-300" },
-    heading: "Supabase Studio is buggy or unreliable in Docker.",
-    description:
-      "Developers report encountering bugs and reliability issues with Supabase Studio when running it within Docker containers for self-hosting.",
-    link: "#",
-    upvotes: "150",
+    date: "5 month ago",
+    tag: { text: "storage", colorScheme: "bg-red-500/20 text-red-300" },
+    heading: "Anyone able to get the self hosted version running properly?",
+    description: `Hey everyone, I've been struggling to get the self hosted version of Supabase to work properly. I am running it inside docker swarm using the docker compose example they provide in github as reference. I've been able to get everything to work (as far as I'm aware) except for the storage portion. To my understanding you can connect to your s3 provider, which I've configured the env variables. But in the dashboard, it doesn't seem to connect to look for the bucket. Also when trying to upload anything, Studio is firing off a ton of Cors violations. To add to this, when I click on Configuration -> Settings, it just redirects me to the home page. Under network console log, it simply says cancelled... 
+    I honestly don't know what is going on. Any help is appreciated.`,
+    upvotes: "13",
     downvotes: "5",
-    comments: "68",
+    comments: "6",
   },
   {
-    id: "gh-issue2",
+    id: "gh-issue4",
     social: "github",
-    username: "anotherdev",
+    link: "https://github.com/orgs/supabase/discussions/20111#discussion-6022564",
+    username: "nokia6290",
     avatarUrl: CONSISTENT_AVATAR_URL,
-    date: "Jan 10, 2024",
-    heading: "Feature Request: Enhanced logging for self-hosted instances",
-    description:
-      "It would be incredibly helpful to have more granular and accessible logging capabilities directly within the self-hosted Supabase dashboard.",
+    date: "Jan 1, 2024",
+    heading: "Self-hosting not working properly",
+    description: "",
     githubData: {
-      titlePrefix: "Feature Request",
+      titlePrefix: "Bug report",
+      checklist: [
+        {
+          id: "c1",
+          text: "I confirm this is a bug with Supabase, not with my own application.",
+          checked: true,
+        },
+        {
+          id: "c2",
+          text: "I confirm I have searched the Docs, GitHub Discussions, and Discord.",
+          checked: true,
+        },
+      ],
       sections: [
         {
           id: "s1",
-          title: "Problem Statement",
-          content:
-            "Currently, debugging issues or monitoring performance on self-hosted instances requires significant manual effort due to limited built-in logging visibility.",
+          content: "Hi all,",
         },
         {
           id: "s2",
-          title: "Proposed Solution",
+          content: "Trying to self-host supabase.",
+        },
+        {
+          id: "s3",
           content:
-            "Integrate a logging interface similar to what's available in the cloud version, allowing users to view, filter, and search logs for various services (PostgREST, GoTrue, Realtime, etc.).",
+            "Tutorials, videos, official documentation is really challenging and sometimes nonexistant ...",
+        },
+        {
+          id: "s4",
+          content:
+            "However. Got it eventually running ( supabase, edited production env files with secrets and all. Launched successfully studio login on digital ocean Ec2 instance. (2cpu, 4gb ram, enough ssd). Built a mini website on flutter and trying to fetch some basic data (no auth, and no security on them added so the API call is publicly available.). Built a simple table on public scheme..made a query that fetches all my data that I want.",
         },
       ],
       labels: [
         {
           id: "l1",
-          name: "enhancement",
-          color: "bg-blue-200 text-blue-800 border border-blue-400",
+          name: "bug",
+          color: "bg-red-200 text-red-800 border border-red-400",
+        },
+      ],
+      assignees: [{ avatarUrl: CONSISTENT_AVATAR_SM_URL, username: "General" }],
+    },
+    comments: "5",
+  },
+  {
+    id: "gh-issue5",
+    social: "github",
+    link: "https://github.com/supabase/supabase/issues/19949#issue-2052865202",
+    username: "miguelgargallo",
+    avatarUrl: CONSISTENT_AVATAR_URL,
+    date: "Dec 21, 2023",
+    heading: "2024 | Lack of Essential Features in Supabase Open-Source Version: SSL and Multi-Project Management",
+    description: "",
+    githubData: {
+      titlePrefix: "Bug report",
+      checklist: [
+        {
+          id: "c1",
+          text: `I love supabase but I feel disappointed ¿How I supose to use this "open source" project on production at home servers?`,
+          checked: true,
         },
         {
-          id: "l2",
-          name: "logging",
-          color: "bg-gray-200 text-gray-800 border border-gray-400",
+          id: "c2",
+          text: "Supabase closed hundreds of times this kind of issues but never really solve it.",
+          checked: true,
+        },
+        {
+          id: "c3",
+          text: "I confirm this is a bug with Supabase, not with my own application.",
+          checked: true,
+        },
+        {
+          id: "c4",
+          text: "I confirm I have searched the Docs, GitHub Discussions, and Discord.",
+          checked: true,
         },
       ],
-      assignees: [
-        { avatarUrl: CONSISTENT_AVATAR_SM_URL, username: "core-team-member" },
+      sections: [
+        {
+          id: "s1",
+          title: "Introduction",
+          content: "My admiration for Supabase and its community is profound. This community, known for its dedication to creating guides and supporting features, has made Supabase more accessible and versatile. However, this approach raises concerns about the accessibility of key features to all users. Essential features should be natively supported in the core platform, ensuring an inclusive and user-friendly experience for everyone.",
+        },
+        {
+          id: "s2",
+          title: "The Concerning Trend",
+          content: "There's a worrying trend in treating Supabase as a ready-for-production open-source solution, based solely on the official guides. This approach is somewhat disingenuous and could be perceived as an insult to the community. Open-source projects should be transparent about their capabilities and limitations, especially in production environments.",
+        },
+       
+        {
+          id: "s3",
+          title: "Unsound Practices",
+          content: "The deliberate exclusion of crucial features like domain SSL and multi-project management in the open-source version, pushing users towards the paid cloud variant, is an unsound practice. This contradicts the ethos of open-source software, which centers on inclusivity and community support.",
+        },
+       
       ],
+      labels: [
+        {
+          id: "l1",
+          name: "bug",
+          color: "bg-red-200 text-red-800 border border-red-400",
+        },
+      ],
+      assignees: [{ avatarUrl: CONSISTENT_AVATAR_SM_URL, username: "General" }],
     },
-    comments: "8",
+    comments: "3",
+  },
+  {
+    id: "gh-issue6",
+    social: "github",
+    link: "https://github.com/orgs/supabase/discussions/12954",
+    username: "anasfik",
+    avatarUrl: CONSISTENT_AVATAR_URL,
+    date: "Dec 11, 2023",
+    heading: "General Informations exchanges for self hosted version of Supabase",
+    description: "",
+    githubData: {
+      titlePrefix: "Bug report",
+      checklist: [],
+      sections: [
+        {
+          id: "s1",
+          content: "Hello, I discovered Supabase a while, the cloud service is just great and unique. However, working with the self-hosted version let to a lot of confusing such as regarding the existence of features, settings, different databases, and authentication behaviors that I love to discuss here.",
+        },
+        {
+          id: "s2",
+          content: "",
+        },
+      ],
+      labels: [],
+      assignees: [],
+    },
+    comments: "4",
+    upvotes: "4"
   },
 ];
 
