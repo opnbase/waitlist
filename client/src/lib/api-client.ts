@@ -1,3 +1,4 @@
+import type { IFingerPrint } from '@/App';
 import axios, { AxiosHeaders } from 'axios';
 
 // Create an Axios instance with default config
@@ -26,4 +27,5 @@ apiClient.interceptors.request.use(
 
 export const api = {
   joinWaitlist: (email: string) => apiClient.post('/join-waitlist', { email }),
+  trackUser: (fingerprint: IFingerPrint) => apiClient.post('/track-user', { fingerprint }),
 };

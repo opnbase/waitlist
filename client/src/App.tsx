@@ -11,13 +11,14 @@ import Navbar from "./components/navbar";
 import NewsletterForm from "./components/newsletter-form";
 import { assets } from "./assets";
 import { ComingSoonSuspense } from "./components/coming-soon-suspense";
+import { api } from "./lib/api-client";
 
-interface IFingerPrint {
+export interface IFingerPrint {
   user_agent: string;
   screen: string;
   timezone: string;
   language: string;
-  platform: string;
+  platform?: string;
   ip_address?: string;
   fingerprint_hash?: string;
 }
@@ -28,35 +29,34 @@ export default function HomePage() {
   const animatedWords = useMemo(() => comingSoonPageContent.animatedWords, []);
 
   async function sendFingerprint() {
-    const fingerprint: IFingerPrint = {
-      user_agent: navigator.userAgent,
-      screen: `${screen.width}x${screen.height}`,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: navigator.language,
-      platform:
-        (navigator as any).userAgentData?.platform ||
-        navigator.platform ||
-        "unknown",
-    };
+    try {
+      const fingerprint: IFingerPrint = {
+        user_agent: navigator.userAgent,
+        screen: `${screen.width}x${screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        platform: navigator?.platform || "unknown"
+      };
 
-    // Get IP using a simple public API (optional)
-    const ipRes = await fetch("https://api64.ipify.org?format=json");
-    const ipData = await ipRes.json();
-    fingerprint.ip_address = ipData.ip;
+      const ipRes = await fetch("https://api64.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      fingerprint.ip_address = ipData.ip;
 
-    // Create hash (mimic server hash logic)
-    const raw = Object.values(fingerprint).join("|");
-    const encoder = new TextEncoder();
-    const data = encoder.encode(raw);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+      const raw = Object.values(fingerprint).join("|");
+      const encoder = new TextEncoder();
+      const data = encoder.encode(raw);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 
-    fingerprint.fingerprint_hash = hashHex;
+      fingerprint.fingerprint_hash = hashHex;
 
-    console.log(fingerprint);
+      await api.trackUser(fingerprint);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
