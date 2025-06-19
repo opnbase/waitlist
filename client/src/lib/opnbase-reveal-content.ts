@@ -360,7 +360,6 @@ My advice is if you need a Baas without a strong need for SQL or relations in da
 ];
 
 export const finalRevealLines: string[] = [
-  "Presenting Opnbase.",
   "It is the Postgres development platform. The Supabase alternative, but actually open source.",
   "Coming with all the features Supabase has, and many more, free and open for everyone.",
 ];
