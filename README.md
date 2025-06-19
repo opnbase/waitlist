@@ -62,4 +62,6 @@ Follow our journey:
 
 ![Development](https://img.shields.io/badge/development-active-orange?style=for-the-badge)
 
-_Built with ❤️ by the Opnbase team. This waitlist is also open-source._
+<p align="center">
+  <em>Built with ❤️ by the Opnbase team. This waitlist is also open-source.</em>
+</p>
