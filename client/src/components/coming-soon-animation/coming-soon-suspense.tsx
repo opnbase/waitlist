@@ -2,7 +2,7 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X } from "lucide-react";
-import FullscreenRevealContent from "./fullscreen-reveal-content"; // New import
+import FullscreenRevealContent from "./fullscreen-reveal-content"; 
 import { getFingerPrint } from "@/lib/device-fingerprint";
 import { api } from "@/lib/api-client";
 
@@ -77,6 +77,8 @@ const ComingSoonSuspense: React.FC<ComingSoonSuspenseProps> = ({
           role="button"
           aria-label="See more (coming soon)"
           tabIndex={0}
+          initial={{ borderRadius: "0.75rem" }}
+          animate={{ borderRadius: "0.75rem" }}
         >
           <img
             src={imageUrl || "/placeholder.svg"}
@@ -97,7 +99,7 @@ const ComingSoonSuspense: React.FC<ComingSoonSuspenseProps> = ({
             className="fixed inset-0 z-50 bg-black flex items-center justify-center overflow-hidden"
             initial={{ borderRadius: "0.75rem" }}
             animate={{ borderRadius: "0rem" }}
-            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            exit={{ borderRadius: "0.75rem" }}
             transition={{ duration: 0.5, ease: [0.42, 0, 0.58, 1] }}
             onClick={() => handleCloseFullScreen()}
           >
