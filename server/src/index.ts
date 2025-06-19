@@ -11,7 +11,7 @@ const port = 3000;
 
 app.use(express.json());
 
-app.set("trust proxy", true);
+app.set('trust proxy', 'loopback');
 
 app.use(
   cors({
