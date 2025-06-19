@@ -21,8 +21,8 @@ app.use(
 );
 
 const joinWaitlistLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 10,
+  windowMs: 60 * 1000,
+  max: 15,
   message: "Too many requests from this IP, please try again later.",
 });
 
