@@ -6,10 +6,12 @@ import { Input } from "./ui/input";
 import { useState } from "react";
 import { api } from "@/lib/api-client";
 import { AxiosError } from "axios";
+import { useNotification } from "@/context/notification";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const notification = useNotification();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     
@@ -18,13 +20,17 @@ const NewsletterForm = () => {
       const response = await api.joinWaitlist(email);
 
       if(response.status == 200){
-        alert("Thank you for signing up!");
         setEmail("");
         setSubscribed(false);
+        notification.love("Thank you for signing up!");
       }
     } catch (error) {
       if(error instanceof AxiosError){
-        alert(error.response?.data.message);
+        if(error.status === 429){
+          notification.error("Too many requests, please try after some time");
+        }else{
+          notification.info(error.response?.data.message);
+        }
       }
     } 
   };
@@ -56,6 +62,7 @@ const NewsletterForm = () => {
         <div className="flex items-center space-x-2">
           <Checkbox
             id="subscribe"
+            required
             checked={subscribed}
             onCheckedChange={(v) => setSubscribed(v === true)}
             className="h-4 w-4 rounded border-neutral-400 data-[state=checked]:bg-white data-[state=checked]:text-black"
