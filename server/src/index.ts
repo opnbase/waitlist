@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import { supabase } from "./supabase-client";
-import { sendDiscordWebhook } from "./utils/webhook";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
@@ -62,14 +61,6 @@ app.post(
       if(error){
         if(data === null){
           const { data, error } = await supabase.from("user_fingerprints").insert(fingerprint).select().single();
-
-          if(!error){
-            const webhookUrl = process.env.WAITLIST_WEBHOOK_URL;
-
-            if(webhookUrl){
-              await sendDiscordWebhook(webhookUrl, "Visitor", `IP : ${data.ip_address}\nTimeZone : ${data.timezone}`, "#3498DB")
-            }
-          }
         }
       }
       
