@@ -4,10 +4,10 @@ Join the Opnbase waitlist: The Supabase alternative, but actually open source.
 
 ## What You'll Get
 
-- 🚀 Early access to Opnbase platform
-- 📧 Exclusive updates on development progress
-- 💬 Direct feedback channel to influence features
-- 🏆 Founding member recognition
+- Early access to Opnbase platform
+- Exclusive updates on development progress
+- Direct feedback channel to influence features
+- Founding member recognition
 
 ## Why Join Early?
 
