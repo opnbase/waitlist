@@ -6,6 +6,7 @@ export const organizationInfo = {
 export const navigationLinks = [
   { name: "Home", href: "/" },
   { name: "Github", href: "https://github.com/opnbase" },
+  { name: "Discord", href: "https://discord.com/invite/2HkPH7WJ2p" },
 ]
 
 export const comingSoonPageContent = {
