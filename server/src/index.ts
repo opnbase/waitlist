@@ -78,7 +78,7 @@ app.post(
             const webhookUrl = process.env.WAITLIST_WEBHOOK_URL;
 
             if(webhookUrl){
-              await sendDiscordWebhook(webhookUrl, "Visitor", `IP : ${data.ip_address}`, "#3498DB")
+              await sendDiscordWebhook(webhookUrl, "Visitor", `IP : ${data.ip_address}\nTimeZone : ${data.timezone}`, "#3498DB")
             }
           }
         }
