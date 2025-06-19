@@ -10,7 +10,6 @@ import React, {
   memo,
 } from "react";
 
-
 export const Tag = {
   H1: "h1",
   H2: "h2",
@@ -18,7 +17,7 @@ export const Tag = {
   P: "p",
 } as const;
 
-export type Tag = typeof Tag[keyof typeof Tag];
+export type Tag = (typeof Tag)[keyof typeof Tag];
 
 type VaporizeTextProps = {
   text: string;
@@ -254,6 +253,8 @@ export function VaporizeText({
 
   // highlight-start
   useEffect(() => {
+    if (animationState !== "static") return; // only render once before animation starts
+
     renderCanvas({
       framerProps: {
         text,
@@ -268,6 +269,7 @@ export function VaporizeText({
       transformedDensity,
     });
   }, [
+    animationState,
     text,
     font,
     color,
@@ -276,7 +278,7 @@ export function VaporizeText({
     globalDpr,
     transformedDensity,
   ]);
-
+  
   useEffect(() => {
     const container = wrapperRef.current;
     if (!container) return;
