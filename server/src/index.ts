@@ -11,7 +11,7 @@ const port = 3000;
 
 app.use(express.json());
 
-app.set("trust proxy", "127.0.0.1");
+app.set("trust proxy", true);
 
 app.use(
   cors({
@@ -19,6 +19,11 @@ app.use(
     credentials: true,
   })
 );
+
+app.use((req, res, next) => {
+  console.log("Client IP:", req.ip);
+  next();
+});
 
 const joinWaitlistLimiter = rateLimit({
   windowMs: 60 * 1000,
