@@ -1,10 +1,8 @@
-// @/lib/opnbase-reveal-content.ts
-
 export interface GithubChecklistItem {
   id: string;
   text: string;
   checked: boolean;
-  link?: string; // Optional link within checklist text
+  link?: string; 
 }
 
 export interface GithubSection {
@@ -16,7 +14,7 @@ export interface GithubSection {
 export interface GithubLabel {
   id: string;
   name: string;
-  color: string; // e.g., 'bg-red-500 text-white' or a hex code for inline style
+  color: string; 
 }
 
 export interface GithubComment {
@@ -29,12 +27,12 @@ export interface GithubComment {
     thumbsUp: number;
     rocket: number;
     eyes: number;
-    // Add other reactions as needed
+   
   };
 }
 
 export interface GithubIssueSpecificData {
-  titlePrefix?: string; // e.g., "Bug report"
+  titlePrefix?: string; 
   checklist?: GithubChecklistItem[];
   sections?: GithubSection[];
   assignees?: { avatarUrl: string; username: string }[];
@@ -44,7 +42,6 @@ export interface GithubIssueSpecificData {
 }
 
 export interface StackOverflowQuestionData {
-  // NEW INTERFACE for Stack Overflow
   title: string;
   askedDate: string;
   modifiedDate: string;
@@ -68,21 +65,21 @@ export interface StackOverflowQuestionData {
 
 export interface IssueDetail {
   id: string;
-  social: "reddit" | "github" | "github-comment" | "stackoverflow"; // Added 'stackoverflow'
+  social: "reddit" | "github" | "github-comment" | "stackoverflow"; 
   username: string;
   group?: string;
   avatarUrl: string;
   date: string;
-  tag?: { text: string; colorScheme?: string }; // Primarily for Reddit card
-  heading: string; // Main title/heading of the issue/post (used for reddit/github)
-  description: string; // Main description or initial comment (used for reddit)
+  tag?: { text: string; colorScheme?: string }; 
+  heading: string; 
+  description: string; 
   link?: string;
-  upvotes?: number | string; // Reddit specific
-  downvotes?: number | string; // Reddit specific
-  comments?: number | string; // Reddit specific / GitHub comments count
-  githubData?: GithubIssueSpecificData; // Data specific to GitHub issues
-  commentData?: GithubComment; // For standalone GitHub comments
-  stackoverflowData?: StackOverflowQuestionData; // NEW: For Stack Overflow questions
+  upvotes?: number | string; 
+  downvotes?: number | string; 
+  comments?: number | string; 
+  githubData?: GithubIssueSpecificData;
+  commentData?: GithubComment; 
+  stackoverflowData?: StackOverflowQuestionData; 
 }
 
 const CONSISTENT_AVATAR_URL =
@@ -193,7 +190,7 @@ My advice is if you need a Baas without a strong need for SQL or relations in da
       tags: ["supabase", "supabase-js", "supabase-py"],
       author: {
         username: "Jhonatan Lituma",
-        avatarUrl: CONSISTENT_AVATAR_SM_URL, // Smaller avatar for author section
+        avatarUrl: CONSISTENT_AVATAR_SM_URL, 
         reputation: 11,
       },
       comments: [],
@@ -365,5 +362,5 @@ My advice is if you need a Baas without a strong need for SQL or relations in da
 export const finalRevealLines: string[] = [
   "Presenting Opnbase.",
   "It is the Postgres development platform. The Supabase alternative, but actually open source.",
-  "Coming with all the features Supabase has—and many more, free and open for everyone.",
+  "Coming with all the features Supabase has, and many more, free and open for everyone.",
 ];
