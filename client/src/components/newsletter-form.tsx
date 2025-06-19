@@ -1,4 +1,4 @@
-import { comingSoonPageContent } from "@/lib/page-content";
+import { comingSoonPageContent, navigationLinks } from "@/lib/page-content";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -7,32 +7,36 @@ import { useState } from "react";
 import { api } from "@/lib/api-client";
 import { AxiosError } from "axios";
 import { useNotification } from "@/context/notification";
+import { Link } from "react-router-dom";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const notification = useNotification();
 
+  const socialLinks = navigationLinks.filter(
+    (link) => link.name === "Github" || link.name === "Discord"
+  );
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    
     try {
       e.preventDefault();
       const response = await api.joinWaitlist(email);
 
-      if(response.status == 200){
+      if (response.status == 200) {
         setEmail("");
         setSubscribed(false);
         notification.love("Thank you for signing up!");
       }
     } catch (error) {
-      if(error instanceof AxiosError){
-        if(error.status === 429){
+      if (error instanceof AxiosError) {
+        if (error.status === 429) {
           notification.error("Too many requests, please try after some time");
-        }else{
+        } else {
           notification.info(error.response?.data.message);
         }
       }
-    } 
+    }
   };
 
   return (
@@ -81,6 +85,28 @@ const NewsletterForm = () => {
           {comingSoonPageContent.buttonText}
         </Button>{" "}
       </form>
+
+      <div className="mt-8 flex items-center space-x-4 md:hidden lg:hidden">
+        <p className="text-sm text-neutral-400">Join our community:</p>
+        <div className="flex flex-1 items-center space-x-4">
+          {socialLinks.map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.name}
+                to={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={link.name}
+                className="h-10 w-10 flex items-center justify-center rounded-full bg-white/10 border border-neutral-700 text-neutral-300 hover:bg-white/20 hover:border-neutral-600 hover:text-white transition-all duration-200 ease-in-out"
+              >
+                {Icon && <Icon size={22} />} 
+                
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </>
   );
 };

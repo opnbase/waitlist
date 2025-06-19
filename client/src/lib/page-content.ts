@@ -1,3 +1,5 @@
+import { FaGithub, FaDiscord } from "react-icons/fa";
+
 export const organizationInfo = {
   name: "Opnbase",
   logoText: "Opnbase",
@@ -5,8 +7,8 @@ export const organizationInfo = {
 
 export const navigationLinks = [
   { name: "Home", href: "/" },
-  { name: "Github", href: "https://github.com/opnbase" },
-  { name: "Discord", href: "https://discord.com/invite/2HkPH7WJ2p" },
+  { name: "Github", href: "https://github.com/opnbase", icon: FaGithub },
+  { name: "Discord", href: "https://discord.com/invite/2HkPH7WJ2p", icon: FaDiscord },
 ]
 
 export const comingSoonPageContent = {
