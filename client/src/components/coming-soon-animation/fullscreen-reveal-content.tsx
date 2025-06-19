@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, Eye, LinkIcon as LinkIconLucide } from "lucide-react";
+import { Play, Pause, Eye, Link } from "lucide-react";
 
 import RedditCard from "./socials-ui/reddit-card";
 import GithubIssueCard from "./socials-ui/github-issue-card";
@@ -15,6 +15,87 @@ interface FullscreenRevealContentProps {
 }
 
 const ISSUE_DISPLAY_DURATION = 4000;
+
+const AnimatedViewCounter = ({ targetCount }: { targetCount: number }) => {
+  const [currentCount, setCurrentCount] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const animationStartTime = useRef<number>(0);
+  const animationId = useRef<number | null>(null);
+
+  const formatViewCount = (count: number) => {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + "M";
+    } else if (count >= 1000) {
+      return (count / 1000).toFixed(1) + "K";
+    }
+    return count.toString();
+  };
+
+  const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+
+  const animateCount = () => {
+    if (targetCount <= 0) {
+      setCurrentCount(0);
+      return;
+    }
+
+    setIsAnimating(true);
+    animationStartTime.current = performance.now();
+    
+    const duration = Math.min(2000, Math.max(1000, targetCount * 0.1));
+    
+    const updateCount = (timestamp: number) => {
+      const elapsed = timestamp - animationStartTime.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutQuart(progress);
+      
+      const newCount = Math.floor(easedProgress * targetCount);
+      setCurrentCount(newCount);
+      
+      if (progress < 1) {
+        animationId.current = requestAnimationFrame(updateCount);
+      } else {
+        setCurrentCount(targetCount);
+        setIsAnimating(false);
+        animationId.current = null;
+      }
+    };
+    
+    animationId.current = requestAnimationFrame(updateCount);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      animateCount();
+    }, 700);
+
+    return () => {
+      clearTimeout(timer);
+      if (animationId.current) {
+        cancelAnimationFrame(animationId.current);
+      }
+    };
+  }, [targetCount]);
+
+  useEffect(() => {
+    return () => {
+      if (animationId.current) {
+        cancelAnimationFrame(animationId.current);
+      }
+    };
+  }, []);
+
+  return (
+    <motion.span
+      key={currentCount}
+      initial={false}
+      animate={isAnimating ? { scale: [1, 1.05, 1] } : {}}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+    >
+      {formatViewCount(currentCount)} Views
+    </motion.span>
+  );
+};
 
 export default function FullscreenRevealContent({
   viewCount,
@@ -83,15 +164,6 @@ export default function FullscreenRevealContent({
 
   const togglePlayPause = () => {
     setIsPlaying((prev) => !prev);
-  };
-
-  const formatViewCount = (count: number) => {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + "M";
-    } else if (count >= 1000) {
-      return (count / 1000).toFixed(1) + "K";
-    }
-    return count.toString();
   };
 
   return (
@@ -248,7 +320,7 @@ export default function FullscreenRevealContent({
             animate={{ y: 0, opacity: 1, transition: { delay: 0.7 } }}
             exit={{ y: 20, opacity: 0 }}
           >
-            <LinkIconLucide size={16} />
+            <Link size={16} />
             <span>Verify</span>
           </motion.a>
 
@@ -281,7 +353,7 @@ export default function FullscreenRevealContent({
         animate={{ y: 0, opacity: 1, transition: { delay: 0.7 } }}
       >
         <Eye className="w-5 h-5" />
-        <span>{formatViewCount(viewCount)} Views</span>
+        <AnimatedViewCounter targetCount={viewCount} />
       </motion.div>
     </div>
   );
