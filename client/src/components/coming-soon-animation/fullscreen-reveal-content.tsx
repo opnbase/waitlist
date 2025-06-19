@@ -63,7 +63,8 @@ export default function FullscreenRevealContent({
       }
       startProgressTracking();
 
-      const remainingDuration = ISSUE_DISPLAY_DURATION - elapsedTimeOnPauseRef.current;
+      const remainingDuration =
+        ISSUE_DISPLAY_DURATION - elapsedTimeOnPauseRef.current;
 
       timerId = setTimeout(() => {
         elapsedTimeOnPauseRef.current = 0; // Reset elapsed time for the next issue
@@ -78,7 +79,8 @@ export default function FullscreenRevealContent({
       // When paused or stage changes, clear intervals/timeouts and store elapsed time
       if (progressIntervalId) clearInterval(progressIntervalId);
       if (timerId) clearTimeout(timerId);
-      if (currentStage === "issue") { // Only store elapsed time if we are in the issue stage
+      if (currentStage === "issue") {
+        // Only store elapsed time if we are in the issue stage
         elapsedTimeOnPauseRef.current = Date.now() - startTimeRef.current;
       }
     }
@@ -287,20 +289,21 @@ export default function FullscreenRevealContent({
               )}
 
               {/* Glow effect for active dot */}
-              {index === currentIssueIndex && isPlaying && ( // Keep isPlaying for glow
-                <motion.div
-                  className="absolute inset-0 rounded-full bg-white/20"
-                  animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.3, 0, 0.3],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
-              )}
+              {index === currentIssueIndex &&
+                isPlaying && ( // Keep isPlaying for glow
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-white/20"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.3, 0, 0.3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                )}
             </motion.div>
           ))}
         </div>
