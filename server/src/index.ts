@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-import rateLimit from "express-rate-limit";
 import { supabase } from "./supabase-client";
 import { sendDiscordWebhook } from "./utils/webhook";
 import cors from "cors";
@@ -11,23 +10,6 @@ const port = 3000;
 
 app.use(express.json());
 
-app.set('trust proxy', [
-"173.245.48.0/20",
-"103.21.244.0/22",
-"103.22.200.0/22",
-"103.31.4.0/22",
-"141.101.64.0/18",
-"108.162.192.0/18",
-"190.93.240.0/20",
-"188.114.96.0/20",
-"197.234.240.0/22",
-"198.41.128.0/17",
-"162.158.0.0/15",
-"104.16.0.0/13",
-"104.24.0.0/14",
-"172.64.0.0/13",
-"131.0.72.0/22"]);
-
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGIN,
@@ -35,20 +17,8 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  console.log("Client IP:", req.ip);
-  next();
-});
-
-const joinWaitlistLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 15,
-  message: "Too many requests from this IP, please try again later.",
-});
-
 app.post(
   "/join-waitlist",
-  joinWaitlistLimiter,
   async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
@@ -79,7 +49,6 @@ app.post(
 
 app.post(
   "/track-user",
-  joinWaitlistLimiter,
   async (req: Request, res: Response) => {
     try {
       const { fingerprint } = req.body;
@@ -113,7 +82,6 @@ app.post(
 
 app.post(
   "/viewed-presenting",
-  joinWaitlistLimiter,
   async (req: Request, res: Response) => {
     try {
       const { hash } = req.body;
@@ -133,7 +101,6 @@ app.post(
 
 app.get(
   "/view-count",
-  joinWaitlistLimiter,
   async (req: Request, res: Response) => {
     try {
       const { count, error } = await supabase
