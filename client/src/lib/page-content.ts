@@ -4,7 +4,7 @@ export const organizationInfo = {
 }
 
 export const navigationLinks = [
-  { name: "Home", href: "#" },
+  { name: "Home", href: "/" },
   { name: "Github", href: "https://github.com/opnbase" },
 ]
 
