@@ -16,7 +16,6 @@ export default function HomePage() {
     []
   );
 
-  // Track user fingerprint once
   useEffect(() => {
     (async () => {
       try {
@@ -28,7 +27,6 @@ export default function HomePage() {
     })();
   }, []);
 
-  // Cycle the heading words every 2s
   useEffect(() => {
     const id = setTimeout(() => {
       setTitleNumber((n) => (n + 1) % animatedWords.length);
@@ -47,7 +45,7 @@ export default function HomePage() {
           */}
           <div className="flex flex-col lg:flex-row gap-16 w-full max-w-screen-xl mx-auto">
             
-            <div
+            <div id="main-content"
               className="
                 w-full            /* xs–sm: full width, stacks */
                 md:w-3/4 md:mx-auto /* md: narrower & centered */
