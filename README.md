@@ -58,4 +58,8 @@ Follow our journey:
 
 ---
 
+> 🚧 **Active Development:** This site is under ongoing development. Expect frequent changes and improvements.
+
+![Development](https://img.shields.io/badge/development-active-orange?style=for-the-badge)
+
 _Built with ❤️ by the Opnbase team. This waitlist is also open-source._
