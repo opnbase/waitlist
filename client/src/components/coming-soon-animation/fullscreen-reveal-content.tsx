@@ -198,8 +198,9 @@ export default function FullscreenRevealContent({
         {currentStage === "finalReveal" && <FinalRevealStage />}
       </AnimatePresence>
 
+      {/* Desktop: Side dots navigation */}
       {currentStage === "issue" && (
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-[60] flex flex-col gap-4">
+        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-[60] hidden lg:flex lg:flex-col gap-4">
           {revealIssues.map((_, index) => (
             <motion.div
               key={index}
@@ -308,8 +309,120 @@ export default function FullscreenRevealContent({
         </div>
       )}
 
+      {/* Mobile/Tablet: Horizontal dots above verify button */}
+      {currentStage === "issue" && (
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[60] flex gap-3 lg:hidden">
+          {revealIssues.map((_, index) => (
+            <motion.div
+              key={index}
+              className="relative w-3 h-3 flex items-center justify-center group cursor-pointer"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{
+                scale: 1,
+                opacity: 1,
+                y: index === currentIssueIndex ? -4 : 0,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 25,
+                delay: index * 0.1,
+              }}
+              whileHover={{ scale: 1.2 }}
+            >
+              <div
+                className={`absolute w-full h-full rounded-full backdrop-blur-sm border transition-all duration-300 ${
+                  index === currentIssueIndex
+                    ? "bg-white/20 border-white/40 shadow-lg shadow-white/20"
+                    : index < currentIssueIndex
+                    ? "bg-blue-400/30 border-blue-400/50 shadow-md shadow-blue-400/20"
+                    : "bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30"
+                }`}
+              />
+              {index === currentIssueIndex && (
+                <svg
+                  className="absolute w-5 h-5 -rotate-90"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.2)"
+                    strokeWidth="2"
+                  />
+                  <motion.circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 9}`}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 9 }}
+                    animate={{
+                      strokeDashoffset: 2 * Math.PI * 9 * (1 - progress / 100),
+                    }}
+                    transition={{ duration: 0.1, ease: "linear" }}
+                  />
+                </svg>
+              )}
+              <div
+                className={`relative w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  index === currentIssueIndex
+                    ? "bg-white shadow-sm"
+                    : index < currentIssueIndex
+                    ? "bg-blue-400 shadow-sm"
+                    : "bg-white/50 group-hover:bg-white/70"
+                }`}
+              />
+              {index < currentIssueIndex && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
+                >
+                  <svg
+                    className="w-2.5 h-2.5 text-blue-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </motion.div>
+              )}
+              {index === currentIssueIndex &&
+                isPlaying && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-white/20"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.3, 0, 0.3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                )}
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Desktop: Bottom action buttons */}
       {currentStage === "issue" && currentIssue?.link && (
-        <div className="absolute bottom-5 z-[60] flex items-center gap-3">
+        <div className="absolute bottom-5 z-[60] hidden lg:flex lg:items-center gap-3">
           <motion.a
             href={currentIssue.link}
             target="_blank"
@@ -337,6 +450,39 @@ export default function FullscreenRevealContent({
         </div>
       )}
 
+      {/* Mobile/Tablet: Repositioned action buttons */}
+      {currentStage === "issue" && currentIssue?.link && (
+        <>
+          {/* Verify button - center bottom */}
+          <motion.a
+            href={currentIssue.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute bottom-5 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-white/25 transition-colors lg:hidden"
+            aria-label="Verify link"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1, transition: { delay: 0.7 } }}
+            exit={{ y: 20, opacity: 0 }}
+          >
+            <Link size={16} />
+            <span>Verify</span>
+          </motion.a>
+
+          {/* Skip button - left bottom */}
+          <motion.button
+            onClick={() => setCurrentStage("finalReveal")}
+            className="absolute bottom-5 left-5 z-[60] px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold hover:bg-white/25 transition-colors lg:hidden"
+            aria-label="Skip to final reveal"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1, transition: { delay: 0.7 } }}
+            exit={{ y: 20, opacity: 0 }}
+          >
+            Skip
+          </motion.button>
+        </>
+      )}
+
+      {/* Play/Pause button - right bottom (all screens) */}
       <motion.button
         onClick={togglePlayPause}
         className="absolute bottom-5 right-5 z-[60] p-2 bg-white/10 text-white rounded-full hover:bg-white/25 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
@@ -347,9 +493,19 @@ export default function FullscreenRevealContent({
         {isPlaying ? <Pause className="w-7 h-7" /> : <Play className="w-7 h-7" />}
       </motion.button>
 
+      {/* Views counter - Desktop: bottom left, Mobile/Tablet: top left */}
       <motion.div
-        className="absolute bottom-5 left-5 z-[60] px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold flex items-center gap-2"
+        className="absolute z-[60] px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold hidden lg:flex lg:items-center gap-2 bottom-5 left-5"
         initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1, transition: { delay: 0.7 } }}
+      >
+        <Eye className="w-5 h-5" />
+        <AnimatedViewCounter targetCount={viewCount} />
+      </motion.div>
+
+      <motion.div
+        className="absolute top-5 left-5 z-[60] px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold flex items-center gap-2 lg:hidden"
+        initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1, transition: { delay: 0.7 } }}
       >
         <Eye className="w-5 h-5" />
