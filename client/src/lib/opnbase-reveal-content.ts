@@ -122,13 +122,19 @@ export const revealIssues: IssueDetail[] = [
           id: "s2",
           title: "To Reproduce",
           content: ` 
-        Steps to reproduce the behavior, please provide code snippets or a repository:
-        - Go to supabase
-        - Try to follow the instructions
-        - Battle the Lords of Hell, jump over all the problems, fail, repeat, fail again
-        - See all kinds of errors in all supabase created containers
-        - Watch your beautiful supabase studio doing nothing, feel sad, write an issue on GitHub
+          Steps to reproduce the behavior, please provide code snippets or a repository:
+          - Go to supabase
+          - Try to follow the instructions
+          - Battle the Lords of Hell, jump over all the problems, fail, repeat, fail again
+          - See all kinds of errors in all supabase created containers
+          - Watch your beautiful supabase studio doing nothing, feel sad, write an issue on GitHub
           `,
+        },
+        {
+          id: "s3",
+          title: "Expected behavior",
+          content:
+            "Have a comprehensive step-by-step, maybe some common problems and solutions, explain the detached stuff better etc.",
         },
       ],
       labels: [
