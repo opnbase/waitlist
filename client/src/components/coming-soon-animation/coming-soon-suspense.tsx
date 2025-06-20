@@ -4,6 +4,7 @@ import { Play, X } from "lucide-react";
 import FullscreenRevealContent from "./fullscreen-reveal-content";
 import { getFingerPrint } from "@/lib/device-fingerprint";
 import { api } from "@/lib/api-client";
+import { trackEvent } from "@/lib/analytics";
 
 interface ComingSoonSuspenseProps {
   imageUrl: string;
@@ -42,6 +43,11 @@ const ComingSoonSuspense: React.FC<ComingSoonSuspenseProps> = ({
     setIsFullScreen(true);
     recordView();
     fetchCount();
+    /* ─── Google Analytics custom‐event ─── */
+    trackEvent("coming_soon_video_opened", {
+      page: window.location.pathname,
+      component: "ComingSoonSuspense",
+    });
     setTimeout(() => setShowBlackOverlay(true), 300);
   };
 
@@ -86,7 +92,6 @@ const ComingSoonSuspense: React.FC<ComingSoonSuspenseProps> = ({
             alt={altText || "Coming Soon"}
             loading="eager"
             draggable="false"
-
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out"
           />
           <div className="absolute inset-0 bg-black/30 transition-colors duration-300 group-hover:bg-black/50" />
