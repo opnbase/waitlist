@@ -72,7 +72,7 @@ export function BeamsBackground({
         createBeam(width, height)
       );
 
-      drawStaticFrame();            // <── paint once, synchronously
+      drawStaticFrame(); 
     };
 
     const drawBeam = (b: Beam) => {
@@ -80,10 +80,7 @@ export function BeamsBackground({
       ctx.translate(b.x, b.y);
       ctx.rotate((b.angle * Math.PI) / 180);
 
-      const pulse =
-        b.opacity *
-        (0.8 + Math.sin(b.pulse) * 0.2) *
-        opacityScale;
+      const pulse = b.opacity * (0.8 + Math.sin(b.pulse) * 0.2) * opacityScale;
 
       const g = ctx.createLinearGradient(0, 0, 0, b.length);
       g.addColorStop(0, `hsla(${b.hue},85%,65%,0)`);
@@ -110,8 +107,7 @@ export function BeamsBackground({
           const span = width / dpr / 3;
           Object.assign(b, {
             y: height / dpr + 100,
-            x:
-              col * span + span / 2 + (Math.random() - 0.5) * span * 0.5,
+            x: col * span + span / 2 + (Math.random() - 0.5) * span * 0.5,
             width: 100 + Math.random() * 100,
           });
         }
@@ -122,7 +118,7 @@ export function BeamsBackground({
     };
 
     const drawStaticFrame = () => {
-      ctx.fillStyle = "#0d1117";               // dark fallback
+      ctx.fillStyle = "#0d1117"; // dark fallback
       ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
       beams.current.forEach(drawBeam);
     };
@@ -139,7 +135,7 @@ export function BeamsBackground({
 
   return (
     <div className={cn("relative", className)}>
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-neutral-950">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-neutral-950">
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full"
