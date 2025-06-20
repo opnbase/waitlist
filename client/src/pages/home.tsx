@@ -11,10 +11,7 @@ import { getFingerPrint } from "../lib/device-fingerprint";
 
 export default function HomePage() {
   const [titleNumber, setTitleNumber] = useState(0);
-  const animatedWords = useMemo(
-    () => comingSoonPageContent.animatedWords,
-    []
-  );
+  const animatedWords = useMemo(() => comingSoonPageContent.animatedWords, []);
 
   useEffect(() => {
     (async () => {
@@ -44,8 +41,8 @@ export default function HomePage() {
             - lg (≥1280px):    flex-row 
           */}
           <div className="flex flex-col lg:flex-row gap-16 w-full max-w-screen-xl mx-auto">
-            
-            <div id="main-content"
+            <div
+              id="main-content"
               className="
                 w-full            /* xs–sm: full width, stacks */
                 md:w-3/4 md:mx-auto /* md: narrower & centered */
@@ -58,11 +55,10 @@ export default function HomePage() {
               </p>
 
               <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-6 sm:mb-8 leading-tight flex flex-col sm:flex-row sm:items-center">
-                <span className="h-[1.3em]">
-                  {comingSoonPageContent.title}
-                </span>
+                <span className="h-[1.3em]">{comingSoonPageContent.title}</span>
                 <span className="hidden sm:inline-block">&nbsp;</span>
-                <span className="relative inline-flex h-[1.3em] w-[12ch] overflow-hidden">
+                <span className="relative inline-flex h-[1.3em] w-[8ch] sm:w-[10ch] md:w-[12ch] overflow-hidden">
+                  {" "}
                   {animatedWords.map((word, idx) => (
                     <motion.span
                       key={idx}
