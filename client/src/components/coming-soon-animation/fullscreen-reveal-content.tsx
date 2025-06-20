@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, Eye, Link } from "lucide-react";
+import { Play, Pause, Eye, Link, Info } from "lucide-react";
 
 import RedditCard from "./socials-ui/reddit-card";
 import GithubIssueCard from "./socials-ui/github-issue-card";
@@ -15,6 +15,89 @@ interface FullscreenRevealContentProps {
 }
 
 const ISSUE_DISPLAY_DURATION = 4000;
+
+const InfoTooltip = ({ viewCount }: { viewCount: number }) => {
+  const [isTooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState("above");
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const toggleTooltip = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
+    if (!isTooltipVisible && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const spaceAbove = rect.top;
+
+      // If less than 80px space above, show below
+      setTooltipPosition(spaceAbove < 80 ? "below" : "above");
+    }
+
+    setTooltipVisible((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+        setTooltipVisible(false);
+      }
+    };
+
+    if (isTooltipVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isTooltipVisible]);
+
+  return (
+    <div className="relative flex items-center" ref={tooltipRef}>
+      <button
+        ref={buttonRef}
+        onClick={toggleTooltip}
+        onMouseEnter={() => setTooltipVisible(true)}
+        onMouseLeave={() => setTooltipVisible(false)}
+        className="p-0.5 rounded-full hover:bg-white/20 transition-colors focus:outline-none"
+        aria-label="Show total views"
+      >
+        <Info className="w-4 h-4 text-white/80 hover:text-white" />
+      </button>
+
+      <AnimatePresence>
+        {isTooltipVisible && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: tooltipPosition === "above" ? 10 : -10,
+              scale: 0.95,
+            }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{
+              opacity: 0,
+              y: tooltipPosition === "above" ? 10 : -10,
+              scale: 0.95,
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className={`absolute left-1/2 -translate-x-1/2 w-max max-w-xs px-3 py-2 bg-white/20 bg-opacity-80 backdrop-blur-sm text-white text-sm rounded-lg shadow-lg ${
+              tooltipPosition === "above" ? "bottom-full mb-4" : "top-full mt-4"
+            }`}
+          >
+            {viewCount.toLocaleString()} total views
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 w-0 h-0 border-x-[6px] border-x-transparent ${
+                tooltipPosition === "above"
+                  ? "top-full border-t-[6px] border-t-white/20"
+                  : "bottom-full border-b-[6px] border-b-white/20"
+              }`}
+            ></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const AnimatedViewCounter = ({ targetCount }: { targetCount: number }) => {
   const [currentCount, setCurrentCount] = useState(0);
@@ -41,17 +124,17 @@ const AnimatedViewCounter = ({ targetCount }: { targetCount: number }) => {
 
     setIsAnimating(true);
     animationStartTime.current = performance.now();
-    
+
     const duration = Math.min(2000, Math.max(1000, targetCount * 0.1));
-    
+
     const updateCount = (timestamp: number) => {
       const elapsed = timestamp - animationStartTime.current;
       const progress = Math.min(elapsed / duration, 1);
       const easedProgress = easeOutQuart(progress);
-      
+
       const newCount = Math.floor(easedProgress * targetCount);
       setCurrentCount(newCount);
-      
+
       if (progress < 1) {
         animationId.current = requestAnimationFrame(updateCount);
       } else {
@@ -60,7 +143,7 @@ const AnimatedViewCounter = ({ targetCount }: { targetCount: number }) => {
         animationId.current = null;
       }
     };
-    
+
     animationId.current = requestAnimationFrame(updateCount);
   };
 
@@ -100,7 +183,9 @@ const AnimatedViewCounter = ({ targetCount }: { targetCount: number }) => {
 export default function FullscreenRevealContent({
   viewCount,
 }: FullscreenRevealContentProps) {
-  const [currentStage, setCurrentStage] = useState<"issue" | "finalReveal">("issue");
+  const [currentStage, setCurrentStage] = useState<"issue" | "finalReveal">(
+    "issue"
+  );
   const [currentIssueIndex, setCurrentIssueIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -289,21 +374,20 @@ export default function FullscreenRevealContent({
                   </svg>
                 </motion.div>
               )}
-              {index === currentIssueIndex &&
-                isPlaying && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full bg-white/20"
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.3, 0, 0.3],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                )}
+              {index === currentIssueIndex && isPlaying && (
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-white/20"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.3, 0, 0.3],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+              )}
             </motion.div>
           ))}
         </div>
@@ -400,21 +484,20 @@ export default function FullscreenRevealContent({
                   </svg>
                 </motion.div>
               )}
-              {index === currentIssueIndex &&
-                isPlaying && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full bg-white/20"
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.3, 0, 0.3],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                )}
+              {index === currentIssueIndex && isPlaying && (
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-white/20"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.3, 0, 0.3],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+              )}
             </motion.div>
           ))}
         </div>
@@ -490,10 +573,14 @@ export default function FullscreenRevealContent({
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1, transition: { delay: 0.7 } }}
       >
-        {isPlaying ? <Pause className="w-7 h-7" /> : <Play className="w-7 h-7" />}
+        {isPlaying ? (
+          <Pause className="w-7 h-7" />
+        ) : (
+          <Play className="w-7 h-7" />
+        )}
       </motion.button>
 
-      {/* Views counter - Desktop: bottom left, Mobile/Tablet: top left */}
+      {/* Views counter - Desktop: bottom left */}
       <motion.div
         className="absolute z-[60] px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold hidden lg:flex lg:items-center gap-2 bottom-5 left-5"
         initial={{ y: 20, opacity: 0 }}
@@ -501,8 +588,10 @@ export default function FullscreenRevealContent({
       >
         <Eye className="w-5 h-5" />
         <AnimatedViewCounter targetCount={viewCount} />
+        <InfoTooltip viewCount={viewCount} />
       </motion.div>
 
+      {/* Views counter - Mobile/Tablet: top left */}
       <motion.div
         className="absolute top-5 left-5 z-[60] px-4 py-2 bg-white/10 text-white rounded-full text-sm font-semibold flex items-center gap-2 lg:hidden"
         initial={{ y: -20, opacity: 0 }}
@@ -510,6 +599,7 @@ export default function FullscreenRevealContent({
       >
         <Eye className="w-5 h-5" />
         <AnimatedViewCounter targetCount={viewCount} />
+        <InfoTooltip viewCount={viewCount} />
       </motion.div>
     </div>
   );
