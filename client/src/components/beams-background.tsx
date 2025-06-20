@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -55,7 +55,9 @@ export function BeamsBackground({
     strong: 1,
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -110,10 +112,22 @@ export function BeamsBackground({
 
       const gradient = ctx.createLinearGradient(0, 0, 0, beam.length);
       gradient.addColorStop(0, `hsla(${beam.hue}, 85%, 65%, 0)`);
-      gradient.addColorStop(0.1, `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity * 0.5})`);
-      gradient.addColorStop(0.4, `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity})`);
-      gradient.addColorStop(0.6, `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity})`);
-      gradient.addColorStop(0.9, `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity * 0.5})`);
+      gradient.addColorStop(
+        0.1,
+        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity * 0.5})`
+      );
+      gradient.addColorStop(
+        0.4,
+        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity})`
+      );
+      gradient.addColorStop(
+        0.6,
+        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity})`
+      );
+      gradient.addColorStop(
+        0.9,
+        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity * 0.5})`
+      );
       gradient.addColorStop(1, `hsla(${beam.hue}, 85%, 65%, 0)`);
 
       ctx.fillStyle = gradient;
@@ -144,9 +158,7 @@ export function BeamsBackground({
 
     return () => {
       window.removeEventListener("resize", updateCanvasSize);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
   }, [intensity]);
 
