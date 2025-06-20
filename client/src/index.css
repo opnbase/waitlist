@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+html, body {
+  background: #0d1117;      
+  color: white;
+}

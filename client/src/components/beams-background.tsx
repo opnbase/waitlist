@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface AnimatedGradientBackgroundProps {
+interface BeamsBackgroundProps {
   className?: string;
   children?: ReactNode;
   intensity?: "subtle" | "medium" | "strong";
@@ -23,13 +23,13 @@ interface Beam {
   pulseSpeed: number;
 }
 
-function createBeam(width: number, height: number): Beam {
+function createBeam(w: number, h: number): Beam {
   const angle = -35 + Math.random() * 10;
   return {
-    x: Math.random() * width * 1.5 - width * 0.25,
-    y: Math.random() * height * 1.5 - height * 0.25,
+    x: Math.random() * w * 1.5 - w * 0.25,
+    y: Math.random() * h * 1.5 - h * 0.25,
     width: 30 + Math.random() * 60,
-    length: height * 2.5,
+    length: h * 2.5,
     angle,
     speed: 0.6 + Math.random() * 1.2,
     opacity: 0.12 + Math.random() * 0.16,
@@ -43,124 +43,99 @@ export function BeamsBackground({
   className,
   children,
   intensity = "strong",
-}: AnimatedGradientBackgroundProps) {
+}: BeamsBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const beamsRef = useRef<Beam[]>([]);
-  const animationFrameRef = useRef<number>(0);
-  const MINIMUM_BEAMS = 20;
+  const beams = useRef<Beam[]>([]);
+  const raf = useRef<number | undefined>(undefined);
 
-  const opacityMap = {
-    subtle: 0.7,
-    medium: 0.85,
-    strong: 1,
-  };
+  const opacityScale = { subtle: 0.7, medium: 0.85, strong: 1 }[intensity];
+  const MIN_BEAMS = 20;
 
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
+    const dpr = window.devicePixelRatio || 1;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const updateCanvasSize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+    const resize = () => {
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
 
-      const totalBeams = MINIMUM_BEAMS * 1.5;
-      beamsRef.current = Array.from({ length: totalBeams }, () =>
-        createBeam(canvas.width / dpr, canvas.height / dpr)
+      const total = MIN_BEAMS * 1.5;
+      beams.current = Array.from({ length: total }, () =>
+        createBeam(width, height)
       );
+
+      drawStaticFrame();            // <── paint once, synchronously
     };
 
-    updateCanvasSize();
-    window.addEventListener("resize", updateCanvasSize);
-
-    function resetBeam(beam: Beam, index: number, totalBeams: number) {
-      if (!canvas) return beam;
-      const logicalWidth = canvas.width / (window.devicePixelRatio || 1);
-      const logicalHeight = canvas.height / (window.devicePixelRatio || 1);
-      const column = index % 3;
-      const spacing = logicalWidth / 3;
-
-      beam.y = logicalHeight + 100;
-      beam.x =
-        column * spacing + spacing / 2 + (Math.random() - 0.5) * spacing * 0.5;
-      beam.width = 100 + Math.random() * 100;
-      beam.speed = 0.5 + Math.random() * 0.4;
-      beam.hue = 190 + (index * 70) / totalBeams;
-      beam.opacity = 0.2 + Math.random() * 0.1;
-      return beam;
-    }
-
-    function drawBeam(ctx: CanvasRenderingContext2D, beam: Beam) {
+    const drawBeam = (b: Beam) => {
       ctx.save();
-      ctx.translate(beam.x, beam.y);
-      ctx.rotate((beam.angle * Math.PI) / 180);
+      ctx.translate(b.x, b.y);
+      ctx.rotate((b.angle * Math.PI) / 180);
 
-      const pulsingOpacity =
-        beam.opacity *
-        (0.8 + Math.sin(beam.pulse) * 0.2) *
-        opacityMap[intensity];
+      const pulse =
+        b.opacity *
+        (0.8 + Math.sin(b.pulse) * 0.2) *
+        opacityScale;
 
-      const gradient = ctx.createLinearGradient(0, 0, 0, beam.length);
-      gradient.addColorStop(0, `hsla(${beam.hue}, 85%, 65%, 0)`);
-      gradient.addColorStop(
-        0.1,
-        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity * 0.5})`
-      );
-      gradient.addColorStop(
-        0.4,
-        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity})`
-      );
-      gradient.addColorStop(
-        0.6,
-        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity})`
-      );
-      gradient.addColorStop(
-        0.9,
-        `hsla(${beam.hue}, 85%, 65%, ${pulsingOpacity * 0.5})`
-      );
-      gradient.addColorStop(1, `hsla(${beam.hue}, 85%, 65%, 0)`);
+      const g = ctx.createLinearGradient(0, 0, 0, b.length);
+      g.addColorStop(0, `hsla(${b.hue},85%,65%,0)`);
+      g.addColorStop(0.1, `hsla(${b.hue},85%,65%,${pulse * 0.5})`);
+      g.addColorStop(0.4, `hsla(${b.hue},85%,65%,${pulse})`);
+      g.addColorStop(0.6, `hsla(${b.hue},85%,65%,${pulse})`);
+      g.addColorStop(0.9, `hsla(${b.hue},85%,65%,${pulse * 0.5})`);
+      g.addColorStop(1, `hsla(${b.hue},85%,65%,0)`);
 
-      ctx.fillStyle = gradient;
-      ctx.fillRect(-beam.width / 2, 0, beam.width, beam.length);
+      ctx.fillStyle = g;
+      ctx.fillRect(-b.width / 2, 0, b.width, b.length);
       ctx.restore();
-    }
+    };
 
-    function animate() {
-      if (!canvas || !ctx) return;
-      const logicalWidth = canvas.width / (window.devicePixelRatio || 1);
-      const logicalHeight = canvas.height / (window.devicePixelRatio || 1);
-      ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+    const tick = () => {
+      const { width, height } = canvas;
+      ctx.clearRect(0, 0, width / dpr, height / dpr);
 
-      const totalBeams = beamsRef.current.length;
-      beamsRef.current.forEach((beam, index) => {
-        beam.y -= beam.speed;
-        beam.pulse += beam.pulseSpeed;
-        if (beam.y + beam.length < -100) {
-          resetBeam(beam, index, totalBeams);
+      beams.current.forEach((b, i) => {
+        b.y -= b.speed;
+        b.pulse += b.pulseSpeed;
+        if (b.y + b.length < -100) {
+          const col = i % 3;
+          const span = width / dpr / 3;
+          Object.assign(b, {
+            y: height / dpr + 100,
+            x:
+              col * span + span / 2 + (Math.random() - 0.5) * span * 0.5,
+            width: 100 + Math.random() * 100,
+          });
         }
-        drawBeam(ctx, beam);
+        drawBeam(b);
       });
 
-      animationFrameRef.current = requestAnimationFrame(animate);
-    }
+      raf.current = requestAnimationFrame(tick);
+    };
 
-    animate();
+    const drawStaticFrame = () => {
+      ctx.fillStyle = "#0d1117";               // dark fallback
+      ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+      beams.current.forEach(drawBeam);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    raf.current = requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener("resize", updateCanvasSize);
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      window.removeEventListener("resize", resize);
+      if (raf.current) cancelAnimationFrame(raf.current);
     };
-  }, [intensity]);
+  }, [intensity, opacityScale]);
 
   return (
     <div className={cn("relative", className)}>
@@ -168,7 +143,8 @@ export function BeamsBackground({
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full"
-          style={{ filter: "blur(15px)" }}
+          /* extra safety: a dark fill while JS initialises */
+          style={{ background: "#0d1117", filter: "blur(15px)" }}
         />
         <motion.div
           className="absolute inset-0 bg-neutral-950/5"
@@ -177,7 +153,6 @@ export function BeamsBackground({
           style={{ backdropFilter: "blur(20px)" }}
         />
       </div>
-
       <div className="relative z-10">{children}</div>
     </div>
   );
